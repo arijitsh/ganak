@@ -375,7 +375,7 @@ void Counter::td_decompose() {
   if (!conf.do_td_use_opt_indep) nodes = indep_support_end-1;
   if (conf.do_td_contract) {
     for(uint32_t i = nodes; i < nVars(); i++) {
-      primal.contract(i, conf.td_max_edges*100);
+      primal.contract(i, conf.td_max_edges*100, conf.td_sparse_contr);
       if (primal.numEdges() > conf.td_max_edges*100 ) break;
     }
   }

@@ -179,6 +179,7 @@ void add_ganak_options()
     myopt("--tdlookiters", conf.td_lookahead_iters, atoi, "TD lookahead iterations");
     myopt("--tdlookonlyweight", conf.td_look_only_weight, atoi, "TD lookahead ONLY update weights");
     myopt("--tdcontract", conf.do_td_contract, atoi, "TD contract over opt indep set");
+    myopt("--tdsparsecontr", conf.td_sparse_contr, atoi, "Sparse contraction parameter K");
     myopt("--tdlimit", conf.td_limit, atoi, "If TD is over this, reduce weight to 0.1");
     myopt("--tdoptindep", conf.do_td_use_opt_indep, atoi, "Use opt indep for TD computation");
     myopt("--tdmaxdensity", conf.td_max_density, atof, "Max density for TD computation");

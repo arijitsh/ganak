@@ -23,6 +23,8 @@ THE SOFTWARE.
 #include "TreeDecomposition.hpp"
 
 #include <cassert>
+#include <queue>
+#include <utility>
 #include "common.hpp"
 #include "time_mem.hpp"
 using namespace TWD;
@@ -71,19 +73,44 @@ void Graph::addEdge(int v1, int v2)
   edges++;
 }
 
-void Graph::contract(int v, int max_edges)
+void Graph::contract(int v, int max_edges, int K)
 {
-  for(const auto&a :adj_list[v]) {
-    if(a == v) continue;
-    for(const auto&b : adj_list[v]) {
-      if (b == v) continue;
-      if (a == b) continue;
-      addEdge(a, b);
-      if (numEdges() > max_edges) return;
+  const auto adj_v = adj_list[v];
+  std::vector<std::pair<int,int>> to_add;
+  std::vector<int> dist(nodes);
+
+  for (size_t i = 0; i < adj_v.size(); i++) {
+    const int u = adj_v[i];
+    std::fill(dist.begin(), dist.end(), -1);
+    std::queue<int> q;
+    q.push(u);
+    dist[u] = 0;
+
+    while (!q.empty()) {
+      const int x = q.front();
+      q.pop();
+      if (dist[x] >= K) continue;
+      for (const int y : adj_list[x]) {
+        if (y == v) continue;
+        if (dist[y] != -1) continue;
+        dist[y] = dist[x] + 1;
+        if (dist[y] < K) q.push(y);
+      }
+    }
+
+    for (size_t j = i + 1; j < adj_v.size(); j++) {
+      const int w = adj_v[j];
+      if (dist[w] == -1 || dist[w] > K) to_add.emplace_back(u, w);
     }
   }
-  for(const auto&a :adj_list[v]) {
-    if(a == v) continue;
+
+  for (const auto& e : to_add) {
+    addEdge(e.first, e.second);
+    if (numEdges() > max_edges) return;
+  }
+
+  for (const auto& a : adj_v) {
+    if (a == v) continue;
     adj_mat[a].SetFalse(v);
     adj_list[a].erase(std::find(adj_list[a].begin(), adj_list[a].end(), v));
     edges--;
